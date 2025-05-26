@@ -96,18 +96,14 @@ if banco_questoes is not None:
                 )
 
         if st.checkbox('Deseja fazer o download do gabarito em .docx?', value=False):
-            titulo_gabarito = st.text_input('Título do gabarito: ')
-
             data_hoje = date.today().strftime("%d-%m-%y")
-            if titulo_gabarito:
-                titulo_doc = f'{titulo_gabarito} [{data_hoje}]'
-                st.download_button(
-                    label="Download do gabarito em Word",
-                    data= aux.montar_gabarito_doc(st.session_state.gabarito, titulo_gabarito),
-                    file_name=f"Gabarito {titulo_doc}.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    icon=":material/download:",
-                )
+            st.download_button(
+                label="Download do gabarito em Word",
+                data= aux.montar_gabarito_doc(st.session_state.gabarito, titulo),
+                file_name=f"Gabarito {titulo_doc}.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                icon=":material/download:",
+            )
 
     else:
         st.subheader('Selecione pelo menos um tópico')

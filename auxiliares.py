@@ -119,7 +119,7 @@ def montar_gabarito_doc(df, titulo):
     data = date.today().strftime("%d/%m/%y")
 
     doc = Document()
-    doc.add_heading(titulo, 0)
+    doc.add_heading(f'Gabarito da prova: {titulo}', 0)
 
     # Subtítulo com estilo 'Subtitle'
     sub = doc.add_paragraph(data)

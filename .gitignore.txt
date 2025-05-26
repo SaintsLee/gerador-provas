@@ -1,5 +1,5 @@
 *
-.gitignore
+!.gitignore
 !auxiliares.py
 !main.py
 !requirements.txt

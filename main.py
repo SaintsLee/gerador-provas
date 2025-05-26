@@ -4,17 +4,9 @@ from datetime import date
 import plotly.express as px
 
 import streamlit as st
-from streamlit import columns, session_state
+from streamlit import session_state
 
 import auxiliares as aux
-
-st.set_page_config('Gerador de Provas', layout="wide", page_icon='portfel_logo.ico')
-
-with st.sidebar:
-    st.title('Configuração da prova')
-    banco_questoes = st.file_uploader('Faça o upload do banco de dados no formato .xlsx',
-    '.xlsx',
-    label_visibility = 'hidden')
 
 abas = [
         'Questões - Nível 01',
@@ -22,12 +14,24 @@ abas = [
         'Questões - Nível 03',
        ]
 
+st.set_page_config('Gerador de Provas', layout="wide", page_icon='portfel_logo.ico')
+
+with st.sidebar:
+    st.title('Configuração da prova')
+    banco_questoes = st.file_uploader('⚠️ Faça o upload do banco de dados no formato .xlsx',
+    '.xlsx',
+    label_visibility = 'hidden')
+
 if banco_questoes is not None:
-    st.title('Research Portfel - Gerador de provas')
+    st.title('📋 Research Portfel - Gerador de provas')
     with st.sidebar:
         lista_opcoes = aux.listar_opcoes(abas,banco_questoes)
 
-        tab1,tab2,tab3 = st.tabs(abas)
+        tab1,tab2,tab3 = st.tabs([
+        '🟢 Nível 01',
+        '🟡 Nível 02',
+        '🔴 Nível 03',
+       ])
         with tab1:
             selecionados_nv1 = aux.gera_opcoes(lista_opcoes[0],abas[0])
             df_1 = pd.DataFrame(list(selecionados_nv1.items()),
@@ -71,7 +75,7 @@ if banco_questoes is not None:
         if 'gabarito' not in session_state:
             st.session_state.gabarito = st.session_state.prova_buffer['Correta']
 
-        if st.button("🔄 Gerar nova prova"):
+        if st.button("🔄 Atualizar a prova"):
             st.session_state.prova_buffer = df_prova
             st.session_state.prova = st.session_state.prova_buffer.drop(columns=['Correta',
                                                                                  'Dificuldade',
@@ -82,7 +86,8 @@ if banco_questoes is not None:
         st.subheader('Escopo da prova:')
         st.dataframe(st.session_state.prova_buffer)
         if st.checkbox('Deseja fazer o download da prova em .docx?', value=False):
-            titulo = st.text_input('Título da prova: ')
+            st.write('Escrava o título que será definido na prova')
+            titulo = st.text_input('Título da prova ⤵️')
 
             data_hoje = date.today().strftime("%d-%m-%y")
             if titulo:
@@ -90,22 +95,25 @@ if banco_questoes is not None:
                 st.download_button(
                     label="Download da prova em Word",
                     data= aux.montar_prova_doc(st.session_state.prova, titulo),
-                    file_name=f"{titulo_doc}.docx",
+                    file_name=f"Prova {titulo_doc}.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     icon=":material/download:",
                 )
 
         if st.checkbox('Deseja fazer o download do gabarito em .docx?', value=False):
             data_hoje = date.today().strftime("%d-%m-%y")
-            st.download_button(
-                label="Download do gabarito em Word",
-                data= aux.montar_gabarito_doc(st.session_state.gabarito, titulo),
-                file_name=f"Gabarito {titulo_doc}.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                icon=":material/download:",
-            )
+            if titulo:
+                st.download_button(
+                    label="Download do gabarito em Word",
+                    data= aux.montar_gabarito_doc(st.session_state.gabarito, titulo),
+                    file_name=f"Gabarito {titulo_doc}.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    icon=":material/download:",
+                )
+            else:
+                st.warning('Preencha o título da prova antes de gerar o gabarito!', icon="⚠️")
 
     else:
         st.subheader('Selecione pelo menos um tópico')
 else:
-    st.title('Faça o upload do banco de dados')
+    st.info('Faça o upload do banco de questões', icon="⚠️")

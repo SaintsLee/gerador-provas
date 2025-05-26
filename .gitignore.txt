@@ -1,5 +1,7 @@
 # Ignora tudo
 *
+/.idea
+/__pycache__
 
 # Exceto os arquivos que você quer manter
 !.gitignore

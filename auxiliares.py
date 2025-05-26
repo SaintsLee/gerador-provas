@@ -6,6 +6,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
 
 from io import BytesIO
+from datetime import date
 
 @st.cache_data
 def ler_dataframe(dataframe, nome_aba):
@@ -70,8 +71,14 @@ def gerar_dict_prova(abas,lista_questoes):
     return prova_dict
 
 def montar_prova_doc(df, titulo):
+    data = date.today().strftime("%d/%m/%y")
+
     doc = Document()
     doc.add_heading(titulo, 0)
+
+    # Subtítulo com estilo 'Subtitle'
+    sub = doc.add_paragraph(data)
+    sub.style = 'Subtitle'
 
     for i, row in df.iterrows():
         # Cria o parágrafo

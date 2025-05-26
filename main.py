@@ -83,10 +83,11 @@ if banco_questoes is not None:
 
             data_hoje = date.today().strftime("%d-%m-%y")
             if titulo:
+                titulo_doc = f'{titulo} [{data_hoje}]'
                 st.download_button(
                     label="Download da prova em Word",
-                    data=aux.montar_prova_doc(st.session_state.prova, titulo),
-                    file_name=f"{titulo} {data_hoje}.docx",
+                    data= aux.montar_prova_doc(st.session_state.prova, titulo),
+                    file_name=f"{titulo_doc}.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     icon=":material/download:",
                 )

@@ -1,5 +1,8 @@
+# Ignora tudo
 *
+
+# Exceto os arquivos que você quer manter
 !.gitignore
-!auxiliares.py
 !main.py
 !requirements.txt
+!auxiliares.py

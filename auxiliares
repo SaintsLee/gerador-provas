@@ -1,0 +1,25 @@
+def ler_dataframe(nome_aba, caminho):
+    df = pd.read_excel(caminho, sheet_name=nome_aba)
+    return df
+
+def monta_prova(caminho, dict_prova):
+    list_dfs = []
+
+    for nome_aba, categorias_dict in dict_prova.items():
+        df = ler_dataframe(nome_aba, caminho)
+
+        for categoria, qtd in categorias_dict.items():
+            df_categoria = df[df['Tópico'] == categoria]
+            total_disponivel = df_categoria.shape[0]
+
+            if qtd > total_disponivel:
+                raise ValueError(f"{nome_aba} - Categoria '{categoria}': solicitado {qtd}, mas só há {total_disponivel} disponíveis.")
+
+            questoes_sorteadas = df_categoria.sample(n=qtd)
+            questoes_sorteadas = questoes_sorteadas.copy()
+            questoes_sorteadas['Nivel'] = nome_aba  # opcional: marca o nível de origem
+            list_dfs.append(questoes_sorteadas)
+
+    prova = pd.concat(list_dfs).reset_index(drop=True)
+    prova_embaralhada = prova.sample(frac=1).reset_index(drop=True)
+    return prova_embaralhada

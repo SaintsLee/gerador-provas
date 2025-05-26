@@ -43,8 +43,16 @@ def listar_opcoes(abas, dataframe):
         lista_opcoes.append(opcoes)
     return lista_opcoes
 
-def gera_opcoes(df,aba):
+def gera_opcoes(df,aba,com_reset=True):
     selecionados = {}
+
+    # Botão de reset individual (dentro da aba)
+    if com_reset and st.button(f"🔄 Resetar {aba}", key=f"reset_{aba}"):
+        for _, row in df.iterrows():
+            topico = row['Tópico']
+            st.session_state[f"cb_{topico}_{aba}"] = False
+            st.session_state[f"num_{topico}_{aba}"] = row['Quantidade']  # ou 0 se quiser zerar
+
     # Dicionário para armazenar os resultados
     for _, row in df.iterrows():
         topico = row['Tópico']
@@ -98,6 +106,40 @@ def montar_prova_doc(df, titulo):
             doc.add_paragraph(f'({alt}) {row[alt]}')
 
         doc.add_paragraph('')  # Espaço entre questões
+
+    for p in doc.paragraphs:
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer
+
+def montar_gabarito_doc(df, titulo):
+    data = date.today().strftime("%d/%m/%y")
+
+    doc = Document()
+    doc.add_heading(titulo, 0)
+
+    # Subtítulo com estilo 'Subtitle'
+    sub = doc.add_paragraph(data)
+    sub.style = 'Subtitle'
+
+    lista = list(df)
+    for row in range(len(lista)):
+        # Cria o parágrafo
+        par = doc.add_paragraph()
+
+        # Adiciona o número em negrito
+        run_num = par.add_run(f"{row + 1}. ")
+        run_num.bold = True
+        run_num.font.size = Pt(12)
+
+        # Adiciona o texto da questão normal
+        run_text = par.add_run(df.iloc[row])
+        run_text.font.size = Pt(12)
+
+        #doc.add_paragraph('')  # Espaço entre questões
 
     for p in doc.paragraphs:
         p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY

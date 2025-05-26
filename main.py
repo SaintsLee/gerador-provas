@@ -8,8 +8,7 @@ from streamlit import columns, session_state
 
 import auxiliares as aux
 
-st.set_page_config('Gerador de Provas', layout="wide")
-
+st.set_page_config('Gerador de Provas', layout="wide", page_icon='portfel_logo.ico')
 
 with st.sidebar:
     st.title('Configuração da prova')
@@ -33,27 +32,32 @@ if banco_questoes is not None:
             selecionados_nv1 = aux.gera_opcoes(lista_opcoes[0],abas[0])
             df_1 = pd.DataFrame(list(selecionados_nv1.items()),
                                 columns=['Tópicos','Quantidade'])
+            qntd_nv1 = sum(selecionados_nv1.values())
+
         with tab2:
             selecionados_nv2 = aux.gera_opcoes(lista_opcoes[1],abas[1])
             df_2 = pd.DataFrame(list(selecionados_nv2.items()),
                                 columns=['Tópicos','Quantidade'])
+            qntd_nv2 = sum(selecionados_nv2.values())
+
         with tab3:
             selecionados_nv3 = aux.gera_opcoes(lista_opcoes[2],abas[2])
             df_3 = pd.DataFrame(list(selecionados_nv3.items()),
                                 columns=['Tópicos','Quantidade'])
+            qntd_nv3 = sum(selecionados_nv3.values())
 
     prova_dict = aux.gerar_dict_prova(abas,[selecionados_nv1,selecionados_nv2,selecionados_nv3])
     col1, col2, col3 = st.columns(3)
     with col1:
-        fig = px.bar(df_1, x="Tópicos", y="Quantidade", title="Questões Nível 1")
+        fig = px.bar(df_1, x="Tópicos", y="Quantidade", title=f"Questões Nível 1 - {qntd_nv1}")
         st.plotly_chart(fig)
 
     with col2:
-        fig = px.bar(df_2, x="Tópicos", y="Quantidade", title="Questões Nível 2")
+        fig = px.bar(df_2, x="Tópicos", y="Quantidade", title=f"Questões Nível 2 - {qntd_nv2}")
         st.plotly_chart(fig)
 
     with col3:
-        fig = px.bar(df_3, x="Tópicos", y="Quantidade", title="Questões Nível 3")
+        fig = px.bar(df_3, x="Tópicos", y="Quantidade", title=f"Questões Nível 3 - {qntd_nv3}")
         st.plotly_chart(fig)
 
 
@@ -77,7 +81,6 @@ if banco_questoes is not None:
 
         st.subheader('Escopo da prova:')
         st.dataframe(st.session_state.prova_buffer)
-
         if st.checkbox('Deseja fazer o download da prova em .docx?', value=False):
             titulo = st.text_input('Título da prova: ')
 
@@ -88,6 +91,20 @@ if banco_questoes is not None:
                     label="Download da prova em Word",
                     data= aux.montar_prova_doc(st.session_state.prova, titulo),
                     file_name=f"{titulo_doc}.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    icon=":material/download:",
+                )
+
+        if st.checkbox('Deseja fazer o download do gabarito em .docx?', value=False):
+            titulo_gabarito = st.text_input('Título do gabarito: ')
+
+            data_hoje = date.today().strftime("%d-%m-%y")
+            if titulo_gabarito:
+                titulo_doc = f'{titulo_gabarito} [{data_hoje}]'
+                st.download_button(
+                    label="Download do gabarito em Word",
+                    data= aux.montar_gabarito_doc(st.session_state.gabarito, titulo_gabarito),
+                    file_name=f"Gabarito {titulo_doc}.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     icon=":material/download:",
                 )

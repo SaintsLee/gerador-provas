@@ -86,7 +86,7 @@ if banco_questoes is not None:
         st.subheader('Escopo da prova:')
         st.dataframe(st.session_state.prova_buffer)
         if st.checkbox('Deseja fazer o download da prova em .docx?', value=False):
-            st.write('Escrava o título que será definido na prova')
+            st.write('Escreva o título que será definido na prova')
             titulo = st.text_input('Título da prova ⤵️')
 
             data_hoje = date.today().strftime("%d-%m-%y")

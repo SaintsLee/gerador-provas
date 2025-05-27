@@ -8,3 +8,5 @@
 !requirements.txt
 !auxiliares.py
 *.xml
+*.xml
+/.idea
